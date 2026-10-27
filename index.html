@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mikołajki 2026</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;800&display=swap">
+<style>
+:root{--bg:#EEF3F0;--ink:#13302A;--muted:#4D645D;--card:#FFFFFF;--line:#C9D6D0;--red:#C23B3B;--onred:#fff;--pine:#13302A;--onpine:#EEF3F0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1F1B;--ink:#E8F0EC;--muted:#9DB3AB;--card:#16302A;--line:#2B4A42;--red:#E05A5A;--onred:#1A0A0A;--pine:#E8F0EC;--onpine:#0E1F1B}}
+:root[data-theme="dark"]{--bg:#0E1F1B;--ink:#E8F0EC;--muted:#9DB3AB;--card:#16302A;--line:#2B4A42;--red:#E05A5A;--onred:#1A0A0A;--pine:#E8F0EC;--onpine:#0E1F1B}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;min-height:100vh;display:flex;justify-content:center;padding:24px 16px}
+main{width:100%;max-width:440px}
+h1{font-size:clamp(2.2rem,9vw,3rem);line-height:1.05;margin:8px 0 12px;font-weight:800;letter-spacing:-.02em}
+p{margin:0 0 20px;color:var(--muted)}
+.limit{display:inline-block;background:var(--pine);color:var(--onpine);font-weight:600;padding:2px 10px;border-radius:6px}
+label{display:block;font-weight:600;margin:0 0 6px}
+select,input{width:100%;font:inherit;font-size:1.05rem;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:16px}
+input{letter-spacing:.2em;text-transform:uppercase}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+button{width:100%;font:inherit;font-weight:600;font-size:1.05rem;padding:14px;border:0;border-radius:10px;background:var(--red);color:var(--onred);cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+.gift{position:relative;overflow:hidden;margin-top:24px;border-radius:14px;background:var(--pine);color:var(--onpine);padding:28px 20px;text-align:center;min-height:150px;display:none}
+.gift.show{display:block}
+.gift .who{font-size:clamp(2.2rem,11vw,3.2rem);font-weight:800;line-height:1.1;margin:4px 0 8px;word-break:break-word}
+.gift small{display:block;opacity:.85}
+.ribbon{position:absolute;inset:0;background:var(--red);transition:transform .7s ease;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.ribbon::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:28px;margin-left:-14px;background:rgba(255,255,255,.28)}
+.gift.open .ribbon{transform:translateY(-101%)}
+.err{color:var(--red);font-weight:600;min-height:1.5em;margin:0 0 12px}
+@media (prefers-reduced-motion:reduce){.ribbon{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Mikołajki w rodzinie</h1>
+<p>Każdy kupuje jeden prezent dla jednej osoby. Maksymalna kwota: <span class="limit">50 zł</span></p>
+<label for="who">Kim jesteś?</label>
+<select id="who"></select>
+<label for="code">Twój kod</label>
+<input id="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="np. A7K2MQ">
+<div class="err" id="err" role="alert"></div>
+<button id="go">Pokaż, kogo obdarowuję</button>
+<div class="gift" id="gift" aria-live="polite">
+<small>Prezent kupujesz dla:</small>
+<div class="who" id="out"></div>
+<small>Pamiętaj: do 50 zł i nikomu nie zdradzaj, kogo wylosowałeś(-aś).</small>
+<div class="ribbon" id="rib" aria-hidden="true">🎁</div>
+</div>
+</main>
+<script>
+const D={"Valeria": ["6gr+tKWplb3sHZG1qoBm5A==", "QYPrwvwAVGH+rgF4", "paM1+CJ2ATod/DY/ppYJ6or7QTM="], "Kuba": ["5cjWalOCoZdjBByONSauJA==", "rDoM6/Z0vPny2M2r", "QSQ4wNugFbIN/3t/sQoYTquPN9VASJQ="], "Estera": ["zqjX2Y+maTQDTOSzailRtA==", "yo7ynwPsVxoPQrfi", "IhkMBFgZ83wYXcw6PAoUqO/qM4oMaNM="], "Edyta": ["kyxqnApS0k/8eabMVUk9jQ==", "an7x4tMy6atUpmzE", "Z2n7ivgwtiY0rQ6ENgH6eK1IZg7vCA=="], "Marcin": ["gkxFJdeNSiT2Gm/JO63bFw==", "Agu3z9LSulFzH/q3", "2D7dj2VX+P569AUVH0b6g0s2mMo8"], "Aneta": ["u7UMFayErom9uTUH1lCuAA==", "iEKZ4pwvTTcRFrtY", "ZZRxLl1PvP+9ja9rRcKTy6vXQM0Nqg=="], "Łukasz": ["kh64LL1i++PEeTQfjuUrTA==", "OnYgbDiIDOXpgCPN", "Sr93FtJ5KolYf7IC0TCSMrlrkpHW"], "Tomek": ["p7l2/Edw1w8oriuVZKUpQw==", "+eWxi+2eKtk3Fppz", "OAL/PDIk/ty3ggmrz5m+T4J6wtQ="], "Maja": ["eN8yEP6z6g/8BpX1LfbiQA==", "ZVwbwsZjzz28GKQn", "aNg/HchaMLrSovVpUwGlHII55M3N"], "Zofia": ["SW9WoysKsTJCpFQLZEkykw==", "yC/blZ4Ye91os66q", "NIHR1j4xp6Q2Mv7Rq2rU/ow3IbMv"], "Lillo": ["mMPNWowKJO0VDJYUry5PVw==", "4BaqGoeROJTZmoph", "lICWcS3fEUq4gZR/5eHDRM3l1uGk"]};
+const sel=document.getElementById('who');
+Object.keys(D).forEach(n=>{const o=document.createElement('option');o.textContent=n;sel.appendChild(o)});
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function open_(name,code){
+  const [s,i,c]=D[name].map(b64);
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:s,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:i},key,c));
+}
+const btn=document.getElementById('go'),err=document.getElementById('err'),gift=document.getElementById('gift');
+btn.onclick=async()=>{
+  err.textContent='';gift.classList.remove('show','open');
+  const code=document.getElementById('code').value.trim().toUpperCase();
+  if(!code){err.textContent='Wpisz swój kod.';return}
+  btn.disabled=true;
+  try{
+    const r=await open_(sel.value,code);
+    document.getElementById('out').textContent=r;
+    gift.classList.add('show');
+    setTimeout(()=>gift.classList.add('open'),50);
+  }catch(e){err.textContent='Zły kod dla wybranej osoby. Sprawdź imię i kod.'}
+  btn.disabled=false;
+};
+document.getElementById('code').addEventListener('keydown',e=>{if(e.key==='Enter')btn.click()});
+</script>
+</body>
+</html>
